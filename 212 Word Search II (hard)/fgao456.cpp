@@ -1,4 +1,3 @@
-
 class Solution
 {
 public:
@@ -7,11 +6,10 @@ public:
         string nWord = "";
         unordered_map<char, TrieNode *> m;
     };
-    TrieNode *root = new TrieNode();
-    int delta[5] = {0, 1, 0, -1, 0};
 
-    void buildTrie(vector<string> &words)
+    TrieNode *buildTrie(vector<string> &words)
     {
+        TrieNode *root = new TrieNode();
 
         for (int i = 0; i < words.size(); i++)
         {
@@ -28,6 +26,7 @@ public:
             }
             p->nWord = words[i];
         }
+        return root;
     }
 
     vector<string> findWords(vector<vector<char>> &board, vector<string> &words)
@@ -37,7 +36,7 @@ public:
         if (board.size() < 1 || board[0].size() < 1 || words.size() < 1)
             return result;
 
-        buildTrie(words);
+        TrieNode *root = buildTrie(words);
 
         for (int i = 0; i < board.size(); i++)
         {
@@ -65,15 +64,16 @@ public:
         }
 
         board[row][col] = '*';
-        for (int i = 0; i < 4; i++)
-        {
-            int nr = row + delta[i];
-            int nc = col + delta[i + 1];
-            if (nr >= 0 && nr < board.size() && nc >= 0 && nc < board[0].size() && board[nr][nc] != '*')
-            {
-                dfs(board, nr, nc, result, p);
-            }
-        }
+
+        if (row - 1 >= 0 && board[row - 1][col] != '*')
+            dfs(board, row - 1, col, result, p);
+        if (row + 1 < board.size() && board[row + 1][col] != '*')
+            dfs(board, row + 1, col, result, p);
+        if (col - 1 >= 0 && board[row][col - 1] != '*')
+            dfs(board, row, col - 1, result, p);
+        if (col + 1 < board[0].size() && board[row][col + 1] != '*')
+            dfs(board, row, col + 1, result, p);
+
         board[row][col] = c;
     }
 };
